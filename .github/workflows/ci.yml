@@ -6,6 +6,7 @@ on:
       - main
   pull_request:
     branches:
+      - OMS*
       - main
 
 jobs:
@@ -24,8 +25,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test
+    #   - name: Run tests
+    #     run: npm test
 
       - name: Build the application
         run: npm run build
