@@ -43,10 +43,10 @@ jobs:
 
       # Optional: List build directory contents for debugging
       - name: List build directory
-        run: ls -al build
+        run: ls -al dist
 
       - name: Archive production artifacts
-        run: tar -czf build.tgz build
+        run: tar -czf dist.tgz dist
 
       # Optional: Upload build artifacts if needed
       # - name: Upload build artifacts
