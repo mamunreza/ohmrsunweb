@@ -42,6 +42,10 @@ jobs:
       - name: Build the application
         run: npm run build
 
+      - name: List build directory contents
+        run: ls -la build
+
+
       # - name: Archive production artifacts
       #   run: tar -czf dist.tgz dist
 
