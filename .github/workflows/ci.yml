@@ -42,8 +42,8 @@ jobs:
       - name: Build the application
         run: npm run build
 
-      - name: Archive production artifacts
-        run: tar -czf dist.tgz dist
+      # - name: Archive production artifacts
+      #   run: tar -czf dist.tgz dist
 
       # Optional: Upload build artifacts if needed
       # - name: Upload build artifacts
