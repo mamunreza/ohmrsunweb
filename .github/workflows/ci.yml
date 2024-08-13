@@ -1,13 +1,19 @@
-name: CI
+name: OMS_WEB
 
 on:
+  workflow_dispatch:
+    inputs:
+      deploy_approval:
+        description: 'Enter "release" to approve deployment'
+        required: true
   push:
     branches:
-      - OMS*
-      - main
-  pull_request:
-    branches:
-      - main
+    - main
+    - 'OMS*'
+
+permissions:
+  id-token: write
+  contents: write
 
 jobs:
   build:
@@ -30,6 +36,9 @@ jobs:
 
       - name: Build the application
         run: npm run build
+
+      - name: Archive production artifacts
+        run: tar -czf build.tgz build
 
       # Optional: Upload build artifacts if needed
       # - name: Upload build artifacts
