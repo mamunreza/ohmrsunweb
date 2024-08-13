@@ -21,21 +21,29 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '20.15.0'  # Specify the Node.js version
 
       - name: Install dependencies
         run: npm install
 
-    #   - name: Run tests
-    #     run: npm test
+      #   - name: Run tests
+      #     run: npm test
 
       - name: Build the application
         run: npm run build
+
+      # Optional: List files for debugging
+      - name: List files
+        run: ls -al
+
+      # Optional: List build directory contents for debugging
+      - name: List build directory
+        run: ls -al build
 
       - name: Archive production artifacts
         run: tar -czf build.tgz build
