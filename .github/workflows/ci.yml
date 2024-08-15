@@ -69,8 +69,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: oms-web-app
-          path: |
-            dist
+          path: dist
 
   deploy:
     runs-on: ubuntu-latest
@@ -84,7 +83,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: oms-web-app
-        path: dist
+        # path: dist
 
     - name: Authenticate with Azure
       uses: azure/login@v1
