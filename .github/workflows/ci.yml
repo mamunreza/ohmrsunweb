@@ -83,7 +83,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: oms-web-app
-        # path: dist
+        path: dist
 
     # - name: Verify downloaded artifact
     #   run: ls -la dist
@@ -100,4 +100,4 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        package: ./oms-web-app
+        package: ./dist
