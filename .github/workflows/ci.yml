@@ -85,6 +85,9 @@ jobs:
         name: oms-web-app
         # path: dist
 
+    - name: Verify downloaded artifact
+      run: ls -la oms-web-app
+
     - name: Authenticate with Azure
       uses: azure/login@v1
       with:
@@ -97,4 +100,4 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        package: ./dist
+        package: ./oms-web-app
