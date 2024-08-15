@@ -16,7 +16,7 @@ const Activity: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://localhost:7114/activities');
+        const response = await axios.get(`${import.meta.env.VITE_OMS_API_URL}/activities`);
         console.log(response.data);
         const activitiesWithUUID = response.data.activities.map((activity: { title: string, description: string }) => ({
           id: uuidv4(), // Generate UUID for each activity

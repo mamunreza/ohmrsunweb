@@ -24,6 +24,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        environment: [development, production]  # Define environments
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -41,6 +45,11 @@ jobs:
 
       - name: Build the application
         run: npm run build
+
+      - name: Load environment variables
+        run: |
+          cp .env.${{ matrix.environment }} .env
+
 
       - name: List build directory contents
         run: ls -la dist
