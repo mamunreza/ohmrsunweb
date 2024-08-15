@@ -24,6 +24,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        environment: [development, production]  # Define environments
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -41,6 +45,11 @@ jobs:
 
       - name: Build the application
         run: npm run build
+
+      - name: Load environment variables
+        run: |
+          cp .env.${{ matrix.environment }} .env
+
 
       - name: List build directory contents
         run: ls -la dist
@@ -60,8 +69,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: oms-web-app
-          path: |
-            dist
+          path: dist
 
   deploy:
     runs-on: ubuntu-latest
@@ -75,7 +83,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: oms-web-app
-        path: dist
+        # path: dist
 
     - name: Authenticate with Azure
       uses: azure/login@v1
