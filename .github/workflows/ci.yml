@@ -85,8 +85,8 @@ jobs:
         name: oms-web-app
         path: dist
 
-    # - name: Verify downloaded artifact
-    #   run: ls -la dist
+    - name: Verify downloaded artifact
+      run: ls -la ./dist
 
     - name: Authenticate with Azure
       uses: azure/login@v1
