@@ -40,8 +40,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      #   - name: Run tests
-      #     run: npm test
+      - name: Run tests
+        run: npm test --if-present
 
       - name: Build the application
         run: npm run build
@@ -57,13 +57,6 @@ jobs:
 
       # - name: Archive production artifacts
       #   run: tar -czf dist.tgz dist
-
-      # Optional: Upload build artifacts if needed
-      # - name: Upload build artifacts
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: oms-web-app
-      #     path: build/oms-web-app
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v3
