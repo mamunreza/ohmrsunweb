@@ -1,15 +1,27 @@
 import React from 'react';
-import './App.css';
-import Activity from './Activity';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import Header from './components/Header';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <Activity />
-      </header>
-    </div>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
