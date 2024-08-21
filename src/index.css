@@ -2,7 +2,7 @@
 
 /* Global Styles */
 body {
-  background-color: #f8f9fa;
+  background-color: #f9f8fa;
   font-family: 'Arial', sans-serif;
   color: #212529;
   margin: 0;
@@ -11,12 +11,12 @@ body {
 
 /* Navbar Styles */
 .navbar.navbar-expand-lg.navbar-light.bg-light {
-  background-color: #675097 !important;
+  background-color: #f5d68f !important;
 }
 
 .navbar.navbar-expand-lg .navbar-brand, 
 .navbar.navbar-expand-lg .nav-link {
-  color: #ffffff !important;
+  color: #8d4c2a !important;
 }
 
 .navbar-toggler {
@@ -33,16 +33,35 @@ body {
   margin-top: 20px;
 }
 
+.home{
+  height: 100vh; /* 100% of the viewport height */
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+}
+
+/* Card Styles */
+.home-card {
+  height: 100%;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+}
+
 /* Card Styles */
 .card {
   border: none;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 5px;
 }
 
 .card-title {
   font-size: 1.25rem;
   font-weight: bold;
+  padding-bottom: 5px;
 }
 
 .card-text {
@@ -63,12 +82,20 @@ body {
 }
 
 /* Footer Styles */
-.footer {
-  background-color: #343a40;
+/* .footer {
+  background-color: #675097;
   color: #ffffff;
   padding: 10px 0;
   text-align: center;
   margin-top: 30px;
+} */
+
+.footer-custom {
+  background-color: #f5d68f;
+  color: #8d4c2a;
+  padding: 10px 0;
+  text-align: center;
+  margin-top: 10px;
 }
 
 /* Responsive Styles */

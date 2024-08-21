@@ -5,9 +5,21 @@ import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
+import Footer from './components/Footer';
+// import JWTExpiryHandler from './components/Auth/JWTExpiryHandler';
 
 const App: React.FC = () => {
+
+  // const [token, setToken] = useState<string>(localStorage.getItem('token') ?? '');
+
+  // const handleTokenExpired = () => {
+  //   console.log('Session expired')
+  //   localStorage.removeItem('token');
+  //   setToken('');
+  // };
+
   return (
+    <>
     <AuthProvider>
       <Router>
         <Navbar />
@@ -23,7 +35,10 @@ const App: React.FC = () => {
           />
         </Routes>
       </Router>
+      <Footer />
     </AuthProvider>
+      {/* <JWTExpiryHandler token={token} onTokenExpired={handleTokenExpired} /> */}
+    </>
   );
 };
 
