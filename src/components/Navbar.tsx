@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
               <Link className="nav-link active" aria-current="page" to="/">Home</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/activities">Activities</Link>
+              <Link className="nav-link" to="/todo">Todo</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/create-activity">Create Activity</Link>

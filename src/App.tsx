@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
 import Footer from './components/Footer';
 import CreateActivityForm from './components/Activity/CreateActivityForm';
+import TodoPage from './pages/TodoPage';
 // import JWTExpiryHandler from './components/Auth/JWTExpiryHandler';
 
 const App: React.FC = () => {
@@ -39,6 +40,14 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <CreateActivityForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/todo"
+              element={
+                <ProtectedRoute>
+                  <TodoPage />
                 </ProtectedRoute>
               }
             />
