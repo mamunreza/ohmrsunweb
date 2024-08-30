@@ -1,0 +1,103 @@
+/* ActivityComponent.css */
+
+/* Container and Card Styling */
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.card {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Form Inputs */
+.form-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 15px;
+    max-width: 600px; /* Optional max-width for the form */
+    margin: 0 auto; /* Center the form on the page */
+    padding: 20px;
+}
+
+/* Individual Form Groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Button Alignment */
+.form-button {
+    justify-self: center;
+    text-align: center;
+}
+
+input.form-control {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+}
+
+.date-time-input {
+    max-width: 200px;
+}
+
+/* Button Styling */
+button.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+/* List Group Items */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Align buttons on the right in larger viewports */
+@media (min-width: 576px) {
+    .list-group-item {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .list-group-item .btn {
+        margin-right: 0;
+    }
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header,
+.modal-footer {
+    border: none;
+}
+
+.modal-body input.form-control {
+    margin-bottom: 10px;
+}
+
+/* Add some padding on smaller screens */
+@media (max-width: 575.98px) {
+    .modal-content {
+        padding: 15px;
+    }
+}
