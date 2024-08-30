@@ -7,7 +7,7 @@ interface Activity {
   id: string; // UUID
   title: string;
   description: string;
-  activityDate: Date;
+  activityDate?: Date;
 }
 
 interface ActivityProps {
