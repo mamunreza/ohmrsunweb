@@ -7,7 +7,7 @@ interface Activity {
     id: string;
     title: string;
     description: string;
-    activityDate?: Date;
+    activityDate?: string;
 }
 const token = localStorage.getItem('token');
 const ActivityComponent: React.FC = () => {
@@ -39,7 +39,7 @@ const ActivityComponent: React.FC = () => {
                         },
                         params: {
                             page: 1,
-                            pageLimit: 10,
+                            pageLimit: 100,
                         }
                     });
 
@@ -63,7 +63,7 @@ const ActivityComponent: React.FC = () => {
             title: state.newActivityTitle,
             description: state.newActivityDescription || '',
             activityDate: state.newActivityDate && state.newActivityTime
-                ? new Date(`${state.newActivityDate}T${state.newActivityTime}`)
+                ? new Date(`${state.newActivityDate}T${state.newActivityTime}`).toISOString()
                 : undefined,
         };
 
@@ -93,9 +93,55 @@ const ActivityComponent: React.FC = () => {
     };
 
     const openDetailModal = (activity: Activity) => {
+        if (activity.activityDate) {
+            const localDate = new Date(activity.activityDate);
+            const date = localDate.toISOString().split('T')[0]; // Extract date part
+            const time = localDate.toTimeString().split(' ')[0].substring(0, 5); // Extract time part
+            updateState({
+                selectedActivity: activity,
+                newActivityDate: date,  // Set date in local format
+                newActivityTime: time,  // Set time in local format
+                isDetailModalOpen: true,
+            });
+        } else {
+            updateState({
+                selectedActivity: activity,
+                newActivityDate: '',
+                newActivityTime: '',
+                isDetailModalOpen: true,
+            });
+        }
+    };
+    
+    const handleActivityDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newDate = e.target.value;
+        const existingTime = state.newActivityTime || '00:00';
+    
+        const localDateTime = new Date(`${newDate}T${existingTime}`);
+        const utcDateTime = new Date(localDateTime.getTime() - localDateTime.getTimezoneOffset() * 60000).toISOString();
+    
         updateState({
-            selectedActivity: activity,
-            isDetailModalOpen: true,
+            newActivityDate: newDate,
+            selectedActivity: {
+                ...state.selectedActivity!,
+                activityDate: utcDateTime,
+            },
+        });
+    };
+    
+    const handleActivityTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newTime = e.target.value;
+        const existingDate = state.newActivityDate || new Date().toISOString().split('T')[0];
+    
+        const localDateTime = new Date(`${existingDate}T${newTime}`);
+        const utcDateTime = new Date(localDateTime.getTime() - localDateTime.getTimezoneOffset() * 60000).toISOString();
+    
+        updateState({
+            newActivityTime: newTime,
+            selectedActivity: {
+                ...state.selectedActivity!,
+                activityDate: utcDateTime,
+            },
         });
     };
 
@@ -138,24 +184,43 @@ const ActivityComponent: React.FC = () => {
     const updateActivity = async () => {
         if (!state.selectedActivity) return;
 
-        try {
-            const response = await axios.put(`${import.meta.env.VITE_OMS_API_URL}/activities/${state.selectedActivity.id}`, state.selectedActivity);
+        const updatedActivityDate = state.newActivityDate && state.newActivityTime
+            ? new Date(`${state.newActivityDate}T${state.newActivityTime}:00`).toISOString()
+            : undefined;
 
-            updateState({
-                activities: state.activities.map(activity =>
-                    activity.id === response.data.id ? response.data : activity
-                ),
-            });
-            closeDetailModal();
-        } catch (error) {
-            console.error('Failed to update activity', error);
+        const updatedActivity = {
+            ...state.selectedActivity,
+            activityDate: updatedActivityDate,  // Ensure the date is in UTC
+        };
+
+        if (token) {
+            try {
+                const response = await axios.patch(`${import.meta.env.VITE_OMS_API_URL}/activities/${updatedActivity.id}`, updatedActivity, {
+                    headers: {
+                        "Content-Type": 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                updateState({
+                    activities: state.activities.map(activity =>
+                        activity.id === response.data.id ? response.data : activity
+                    ),
+                });
+                closeDetailModal();
+            } catch (error) {
+                console.error('An error occurred:', error);
+                if (axios.isAxiosError(error)) {
+                    console.error('Error response:', error.response?.data);
+                }
+            }
         }
     };
 
     return (
         <div className="container mt-4">
             <div className="form-container">
-                <h1>Activity List</h1>
+                <h1>Activity</h1>
                 <div className="form-group">
                     <label htmlFor="activityTitle" className="col-form-label">Title</label>
                     <input
@@ -231,17 +296,19 @@ const ActivityComponent: React.FC = () => {
             </div>
 
             {state.isDetailModalOpen && state.selectedActivity && (
-                <div className="modal show d-block" onClick={closeDetailModal}>
-                    <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Edit Activity</h5>
-                                <button type="button" className="btn-close" onClick={closeDetailModal}></button>
-                            </div>
-                            <div className="modal-body">
+            <div className="modal show d-block" onClick={closeDetailModal}>
+                <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Edit Activity</h5>
+                            <button type="button" className="btn-close" onClick={closeDetailModal}></button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-group">
+                                <label htmlFor="activityTitle">Title</label>
                                 <input
                                     type="text"
-                                    className="form-control mb-3"
+                                    className="form-control"
                                     value={state.selectedActivity.title}
                                     onChange={(e) =>
                                         updateState({
@@ -250,14 +317,33 @@ const ActivityComponent: React.FC = () => {
                                     }
                                 />
                             </div>
-                            <div className="modal-footer">
-                                <button className="btn btn-primary" onClick={updateActivity}>Save</button>
-                                <button className="btn btn-secondary" onClick={closeDetailModal}>Cancel</button>
+                            <div className="form-group">
+                                <label htmlFor="activityDate">Date</label>
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    value={state.newActivityDate}  // Bind the date input to the state
+                                    onChange={handleActivityDateChange}  // Handle date change
+                                />
                             </div>
+                            <div className="form-group">
+                                <label htmlFor="activityTime">Time</label>
+                                <input
+                                    type="time"
+                                    className="form-control"
+                                    value={state.newActivityTime}  // Bind the time input to the state
+                                    onChange={handleActivityTimeChange}  // Handle time change
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button className="btn btn-primary" onClick={updateActivity}>Save</button>
+                            <button className="btn btn-secondary" onClick={closeDetailModal}>Cancel</button>
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
+        )}
 
             {state.isDeleteModalOpen && (
                 <div className="modal show d-block" onClick={closeDeleteModal}>
