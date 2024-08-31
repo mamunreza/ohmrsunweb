@@ -1,16 +1,15 @@
-import { v4 as uuid } from "uuid";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ActivityComponent.css';
-// import Activity from "./Activity";
 
 interface Activity {
-    id: string; // UUID
+    id: string;
     title: string;
     description: string;
     activityDate?: Date;
 }
-
+const token = localStorage.getItem('token');
 const ActivityComponent: React.FC = () => {
     const [state, setState] = useState({
         activities: [] as Activity[],
@@ -27,25 +26,70 @@ const ActivityComponent: React.FC = () => {
         setState(prevState => ({ ...prevState, ...updates }));
     };
 
-    const addActivity = () => {
+    // Fetch activities from the API when the component mounts
+    useEffect(() => {
+        const fetchActivities = async () => {
+
+            if (token) {
+                try {
+                    const response = await axios.get(`${import.meta.env.VITE_OMS_API_URL}/activities`, {
+                        headers: {
+                            "Content-Type": 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        params: {
+                            page: 1,
+                            pageLimit: 10,
+                        }
+                    });
+
+                    updateState({ activities: response.data.activities });
+                    //console.log(response.data.activities)
+                } catch (error) {
+                    console.error('An error occurred:', error);
+                    if (axios.isAxiosError(error)) {
+                        console.error('Error response:', error.response?.data);
+                    }
+                }
+            }
+        };
+        fetchActivities();
+    }, []);
+
+    const addActivity = async () => {
         if (state.newActivityTitle.trim() === '') return;
 
-        const newActivityToAdd: Activity = {
-            id: uuid(),
+        const newActivityToAdd: Partial<Activity> = {
             title: state.newActivityTitle,
-            description: state.newActivityDescription || '', // Optional description
+            description: state.newActivityDescription || '',
             activityDate: state.newActivityDate && state.newActivityTime
                 ? new Date(`${state.newActivityDate}T${state.newActivityTime}`)
-                : undefined, // Optional date/time
+                : undefined,
         };
 
-        updateState({
-            activities: [...state.activities, newActivityToAdd],
-            newActivityTitle: '',
-            newActivityDescription: '',
-            newActivityDate: '',
-            newActivityTime: '',
-        });
+        if (token) {
+            try {
+                const response = await axios.post(`${import.meta.env.VITE_OMS_API_URL}/activities`, newActivityToAdd, {
+                    headers: {
+                        "Content-Type": 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                updateState({
+                    activities: [...state.activities, response.data],
+                    newActivityTitle: '',
+                    newActivityDescription: '',
+                    newActivityDate: '',
+                    newActivityTime: '',
+                });
+            } catch (error) {
+                console.error('An error occurred:', error);
+                if (axios.isAxiosError(error)) {
+                    console.error('Error response:', error.response?.data);
+                }
+            }
+        }
     };
 
     const openDetailModal = (activity: Activity) => {
@@ -76,22 +120,36 @@ const ActivityComponent: React.FC = () => {
         });
     };
 
-    const deleteActivity = () => {
+    const deleteActivity = async () => {
         if (!state.selectedActivity) return;
-        updateState({
-            activities: state.activities.filter(activity => activity.id !== state.selectedActivity!.id),
-        });
-        closeDeleteModal();
+
+        try {
+            await axios.delete(`${import.meta.env.VITE_OMS_API_URL}/activities/${state.selectedActivity.id}`);
+
+            updateState({
+                activities: state.activities.filter(activity => activity.id !== state.selectedActivity!.id),
+            });
+            closeDeleteModal();
+        } catch (error) {
+            console.error('Failed to delete activity', error);
+        }
     };
 
-    const updateActivity = () => {
+    const updateActivity = async () => {
         if (!state.selectedActivity) return;
-        updateState({
-            activities: state.activities.map(activity =>
-                activity.id === state.selectedActivity!.id ? state.selectedActivity! : activity
-            ),
-        });
-        closeDetailModal();
+
+        try {
+            const response = await axios.put(`${import.meta.env.VITE_OMS_API_URL}/activities/${state.selectedActivity.id}`, state.selectedActivity);
+
+            updateState({
+                activities: state.activities.map(activity =>
+                    activity.id === response.data.id ? response.data : activity
+                ),
+            });
+            closeDetailModal();
+        } catch (error) {
+            console.error('Failed to update activity', error);
+        }
     };
 
     return (
@@ -159,7 +217,7 @@ const ActivityComponent: React.FC = () => {
                                 )}
                                 {todo.activityDate && (
                                     <span className="text-muted d-block">
-                                        Date & Time: {todo.activityDate.toLocaleDateString()} {todo.activityDate.toLocaleTimeString()}
+                                        Date & Time: {new Date(todo.activityDate).toLocaleDateString()} {new Date(todo.activityDate).toLocaleTimeString()}
                                     </span>
                                 )}
                             </div>
