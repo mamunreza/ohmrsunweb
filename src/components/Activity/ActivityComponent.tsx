@@ -169,15 +169,24 @@ const ActivityComponent: React.FC = () => {
     const deleteActivity = async () => {
         if (!state.selectedActivity) return;
 
-        try {
-            await axios.delete(`${import.meta.env.VITE_OMS_API_URL}/activities/${state.selectedActivity.id}`);
-
-            updateState({
-                activities: state.activities.filter(activity => activity.id !== state.selectedActivity!.id),
-            });
-            closeDeleteModal();
-        } catch (error) {
-            console.error('Failed to delete activity', error);
+        if (token) {
+            try {
+                await axios.delete(`${import.meta.env.VITE_OMS_API_URL}/activities/${state.selectedActivity.id}`, {
+                    headers: {
+                        "Content-Type": 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                updateState({
+                    activities: state.activities.filter(activity => activity.id !== state.selectedActivity!.id),
+                });
+                closeDeleteModal();
+            } catch (error) {
+                console.error('An error occurred:', error);
+                if (axios.isAxiosError(error)) {
+                    console.error('Error response:', error.response?.data);
+                }
+            }
         }
     };
 
