@@ -2,13 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ActivityComponent.css';
+import { Activity } from '../../types/Activity';
+import { getActivities } from '../../services/activityService';
 
-interface Activity {
-    id: string;
-    title: string;
-    description: string;
-    activityDate?: string;
-}
 const token = localStorage.getItem('token');
 const ActivityComponent: React.FC = () => {
     const [state, setState] = useState({
@@ -29,29 +25,8 @@ const ActivityComponent: React.FC = () => {
     // Fetch activities from the API when the component mounts
     useEffect(() => {
         const fetchActivities = async () => {
-
-            if (token) {
-                try {
-                    const response = await axios.get(`${import.meta.env.VITE_OMS_API_URL}/activities`, {
-                        headers: {
-                            "Content-Type": 'application/json',
-                            Authorization: `Bearer ${token}`
-                        },
-                        params: {
-                            page: 1,
-                            pageLimit: 100,
-                        }
-                    });
-
-                    updateState({ activities: response.data.activities });
-                    //console.log(response.data.activities)
-                } catch (error) {
-                    console.error('An error occurred:', error);
-                    if (axios.isAxiosError(error)) {
-                        console.error('Error response:', error.response?.data);
-                    }
-                }
-            }
+            const activities = await getActivities();
+            updateState({ activities: activities });
         };
         fetchActivities();
     }, []);
@@ -112,14 +87,14 @@ const ActivityComponent: React.FC = () => {
             });
         }
     };
-    
+
     const handleActivityDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newDate = e.target.value;
         const existingTime = state.newActivityTime || '00:00';
-    
+
         const localDateTime = new Date(`${newDate}T${existingTime}`);
         const utcDateTime = new Date(localDateTime.getTime() - localDateTime.getTimezoneOffset() * 60000).toISOString();
-    
+
         updateState({
             newActivityDate: newDate,
             selectedActivity: {
@@ -128,14 +103,14 @@ const ActivityComponent: React.FC = () => {
             },
         });
     };
-    
+
     const handleActivityTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newTime = e.target.value;
         const existingDate = state.newActivityDate || new Date().toISOString().split('T')[0];
-    
+
         const localDateTime = new Date(`${existingDate}T${newTime}`);
         const utcDateTime = new Date(localDateTime.getTime() - localDateTime.getTimezoneOffset() * 60000).toISOString();
-    
+
         updateState({
             newActivityTime: newTime,
             selectedActivity: {
@@ -305,54 +280,54 @@ const ActivityComponent: React.FC = () => {
             </div>
 
             {state.isDetailModalOpen && state.selectedActivity && (
-            <div className="modal show d-block" onClick={closeDetailModal}>
-                <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Edit Activity</h5>
-                            <button type="button" className="btn-close" onClick={closeDetailModal}></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="form-group">
-                                <label htmlFor="activityTitle">Title</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={state.selectedActivity.title}
-                                    onChange={(e) =>
-                                        updateState({
-                                            selectedActivity: { ...state.selectedActivity!, title: e.target.value },
-                                        })
-                                    }
-                                />
+                <div className="modal show d-block" onClick={closeDetailModal}>
+                    <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Edit Activity</h5>
+                                <button type="button" className="btn-close" onClick={closeDetailModal}></button>
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="activityDate">Date</label>
-                                <input
-                                    type="date"
-                                    className="form-control"
-                                    value={state.newActivityDate}  // Bind the date input to the state
-                                    onChange={handleActivityDateChange}  // Handle date change
-                                />
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label htmlFor="activityTitle">Title</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={state.selectedActivity.title}
+                                        onChange={(e) =>
+                                            updateState({
+                                                selectedActivity: { ...state.selectedActivity!, title: e.target.value },
+                                            })
+                                        }
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="activityDate">Date</label>
+                                    <input
+                                        type="date"
+                                        className="form-control"
+                                        value={state.newActivityDate}  // Bind the date input to the state
+                                        onChange={handleActivityDateChange}  // Handle date change
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="activityTime">Time</label>
+                                    <input
+                                        type="time"
+                                        className="form-control"
+                                        value={state.newActivityTime}  // Bind the time input to the state
+                                        onChange={handleActivityTimeChange}  // Handle time change
+                                    />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="activityTime">Time</label>
-                                <input
-                                    type="time"
-                                    className="form-control"
-                                    value={state.newActivityTime}  // Bind the time input to the state
-                                    onChange={handleActivityTimeChange}  // Handle time change
-                                />
+                            <div className="modal-footer">
+                                <button className="btn btn-primary" onClick={updateActivity}>Save</button>
+                                <button className="btn btn-secondary" onClick={closeDetailModal}>Cancel</button>
                             </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button className="btn btn-primary" onClick={updateActivity}>Save</button>
-                            <button className="btn btn-secondary" onClick={closeDetailModal}>Cancel</button>
                         </div>
                     </div>
                 </div>
-            </div>
-        )}
+            )}
 
             {state.isDeleteModalOpen && (
                 <div className="modal show d-block" onClick={closeDeleteModal}>
