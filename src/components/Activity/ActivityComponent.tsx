@@ -3,7 +3,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ActivityComponent.css';
 import { Activity } from '../../types/Activity';
-import { getActivities } from '../../services/activityService';
+import { getActivities, createActivity } from '../../services/activityService';
 
 const token = localStorage.getItem('token');
 const ActivityComponent: React.FC = () => {
@@ -42,29 +42,14 @@ const ActivityComponent: React.FC = () => {
                 : undefined,
         };
 
-        if (token) {
-            try {
-                const response = await axios.post(`${import.meta.env.VITE_OMS_API_URL}/activities`, newActivityToAdd, {
-                    headers: {
-                        "Content-Type": 'application/json',
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
-                updateState({
-                    activities: [...state.activities, response.data],
-                    newActivityTitle: '',
-                    newActivityDescription: '',
-                    newActivityDate: '',
-                    newActivityTime: '',
-                });
-            } catch (error) {
-                console.error('An error occurred:', error);
-                if (axios.isAxiosError(error)) {
-                    console.error('Error response:', error.response?.data);
-                }
-            }
-        }
+        const addedActivity = await createActivity(newActivityToAdd);
+        updateState({
+            activities: [...state.activities, addedActivity],
+            newActivityTitle: '',
+            newActivityDescription: '',
+            newActivityDate: '',
+            newActivityTime: '',
+        });
     };
 
     const openDetailModal = (activity: Activity) => {
