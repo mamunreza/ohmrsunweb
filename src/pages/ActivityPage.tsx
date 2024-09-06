@@ -1,12 +1,13 @@
 // pages/TodoPage.tsx
 import React from 'react';
 import ActivityComponent from '../components/Activity/ActivityComponent';
-// import '../components/Todo/styles.css'; // Import the styles
+import ActivityFrequencyGraph from '../components/Activity/ActivityFrequenceyGraph';
 
 const ActivityPage: React.FC = () => {
   return (
     <div>
       <ActivityComponent />
+      <ActivityFrequencyGraph />
     </div>
   );
 };
