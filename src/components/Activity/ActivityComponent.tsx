@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ActivityComponent.css';
 import { Activity } from '../../types/Activity';
-import { getActivities, createActivity } from '../../services/activityService';
+import { getActivities, createActivity, updateActivity, deleteActivity } from '../../services/activityService';
 
-const token = localStorage.getItem('token');
 const ActivityComponent: React.FC = () => {
     const [state, setState] = useState({
         activities: [] as Activity[],
@@ -126,64 +124,36 @@ const ActivityComponent: React.FC = () => {
         });
     };
 
-    const deleteActivity = async () => {
+    const removeActivity = async () => {
         if (!state.selectedActivity) return;
 
-        if (token) {
-            try {
-                await axios.delete(`${import.meta.env.VITE_OMS_API_URL}/activities/${state.selectedActivity.id}`, {
-                    headers: {
-                        "Content-Type": 'application/json',
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                updateState({
-                    activities: state.activities.filter(activity => activity.id !== state.selectedActivity!.id),
-                });
-                closeDeleteModal();
-            } catch (error) {
-                console.error('An error occurred:', error);
-                if (axios.isAxiosError(error)) {
-                    console.error('Error response:', error.response?.data);
-                }
-            }
-        }
+        const response = await deleteActivity(state.selectedActivity.id!);
+        console.log(response);
+        updateState({
+            activities: state.activities.filter(activity => activity.id !== state.selectedActivity!.id)
+        });
+        closeDeleteModal();
     };
 
-    const updateActivity = async () => {
+    const modifyActivity = async () => {
         if (!state.selectedActivity) return;
 
         const updatedActivityDate = state.newActivityDate && state.newActivityTime
             ? new Date(`${state.newActivityDate}T${state.newActivityTime}:00`).toISOString()
             : undefined;
 
-        const updatedActivity = {
+        const activityToModify = {
             ...state.selectedActivity,
             activityDate: updatedActivityDate,  // Ensure the date is in UTC
         };
-
-        if (token) {
-            try {
-                const response = await axios.patch(`${import.meta.env.VITE_OMS_API_URL}/activities/${updatedActivity.id}`, updatedActivity, {
-                    headers: {
-                        "Content-Type": 'application/json',
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
-                updateState({
-                    activities: state.activities.map(activity =>
-                        activity.id === response.data.id ? response.data : activity
-                    ),
-                });
-                closeDetailModal();
-            } catch (error) {
-                console.error('An error occurred:', error);
-                if (axios.isAxiosError(error)) {
-                    console.error('Error response:', error.response?.data);
-                }
-            }
-        }
+        
+        const response = await updateActivity(activityToModify);
+        updateState({
+            activities: state.activities.map(activity =>
+                activity.id === response.id ? response : activity
+            ),
+        });
+        closeDetailModal();
     };
 
     return (
@@ -306,7 +276,7 @@ const ActivityComponent: React.FC = () => {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button className="btn btn-primary" onClick={updateActivity}>Save</button>
+                                <button className="btn btn-primary" onClick={modifyActivity}>Save</button>
                                 <button className="btn btn-secondary" onClick={closeDetailModal}>Cancel</button>
                             </div>
                         </div>
@@ -326,7 +296,7 @@ const ActivityComponent: React.FC = () => {
                                 <p>Are you sure you want to delete this activity?</p>
                             </div>
                             <div className="modal-footer">
-                                <button className="btn btn-danger" onClick={deleteActivity}>Yes, Delete</button>
+                                <button className="btn btn-danger" onClick={removeActivity}>Yes, Delete</button>
                                 <button className="btn btn-secondary" onClick={closeDeleteModal}>No, Cancel</button>
                             </div>
                         </div>
