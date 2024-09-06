@@ -9,7 +9,6 @@ import Footer from './components/Footer';
 import CreateActivityForm from './components/Activity/CreateActivityForm';
 import TodoPage from './pages/TodoPage';
 import ActivityPage from './pages/ActivityPage';
-// import JWTExpiryHandler from './components/Auth/JWTExpiryHandler';
 
 const App: React.FC = () => {
 

@@ -87,3 +87,49 @@ export const deleteActivity = async (id: string) => {
         }
     }
 }
+
+export const getActivity = async (id: string) => {
+    const token = getToken();
+    if (token) {
+        try {
+            const response = await axios.get(`${API_URL}/${id}`, {
+                headers: {
+                    "Content-Type": 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('An error occurred:', error);
+            if (axios.isAxiosError(error)) {
+                console.error('Error response:', error.response?.data);
+            }
+        }
+    }
+}
+
+export const getActivitiesByUser = async (userId: string) => {
+    const token = getToken();
+    if (token) {
+        try {
+            const response = await axios.get(`${API_URL}/user/${userId}`, {
+                headers: {
+                    "Content-Type": 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                params: {
+                    page: 1,
+                    pageLimit: 100,
+                }
+            });
+            return response.data.activities;
+        } catch (error) {
+            console.error('An error occurred:', error);
+            if (axios.isAxiosError(error)) {
+                console.error('Error response:', error.response?.data);
+            }
+        }
+    }
+}
+
+
