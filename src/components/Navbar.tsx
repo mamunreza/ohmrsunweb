@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
               <Link className="nav-link" to="/activity">Activity</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/todo">Todo</Link>
+              <Link className="nav-link" to="/statistic">Statistics</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/create-activity">Create Activity</Link>

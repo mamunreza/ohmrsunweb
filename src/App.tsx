@@ -7,7 +7,7 @@ import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
 import Footer from './components/Footer';
 import CreateActivityForm from './components/Activity/CreateActivityForm';
-import TodoPage from './pages/TodoPage';
+import StatPage from './pages/StatPage';
 import ActivityPage from './pages/ActivityPage';
 
 const App: React.FC = () => {
@@ -44,10 +44,10 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/todo"
+              path="/statistic"
               element={
                 <ProtectedRoute>
-                  <TodoPage />
+                  <StatPage />
                 </ProtectedRoute>
               }
             />
