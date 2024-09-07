@@ -132,4 +132,27 @@ export const getActivitiesByUser = async (userId: string) => {
     }
 }
 
+export const getActivitiesByDate = async (days: number) => {
+    const token = getToken();
+    if (token) {
+        try {
+            const response = await axios.get(`${API_URL}/busy-days`, {
+                headers: {
+                    "Content-Type": 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                params: {
+                    numberOfDays: days
+                }
+            });
+            return response.data.topDays;
+        } catch (error) {
+            console.error('An error occurred:', error);
+            if (axios.isAxiosError(error)) {
+                console.error('Error response:', error.response?.data);
+            }
+        }
+    }
+}
+
 

@@ -1,30 +1,39 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell } from 'recharts';
+import { getActivitiesByDate } from '../../services/activityService';
+import { DayActivity } from '../../types/DayActivity';
 
 const ActivityFrequencyGraph: React.FC = () => {
-    // Replace this with your logic to fetch activity data for the current month
-    const activityData = [
-        { day: '1', count: 5 },
-        { day: '2', count: 10 },
-        { day: '3', count: 7 },
-        // Add more data for other days of the month
-    ];
+    const [state, setState] = useState({
+        dayActivities: [] as DayActivity[]
+    });
+    const updateState = (updates: Partial<typeof state>) => {
+        setState(prevState => ({ ...prevState, ...updates }));
+    };
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            const activities = await getActivitiesByDate(10);
+            updateState({ dayActivities: activities });
+        };
+        fetchData();
+    }, []);
 
     return (
         <div>
             <h2>Activity Frequency Graph</h2>
             <PieChart width={400} height={400}>
                 <Pie
-                    data={activityData}
-                    dataKey="count"
+                    data={state.dayActivities}
+                    dataKey="activityCount"
                     cx={200}
                     cy={200}
                     outerRadius={80}
                     fill="#8884d8"
                     label
                 >
-                    {activityData.map((_, index) => (
+                    {state.dayActivities.map((_, index: number) => (
                         <Cell key={`cell-${index}`} fill={`#${Math.floor(Math.random() * 16777215).toString(16)}`} />
                     ))}
                 </Pie>
