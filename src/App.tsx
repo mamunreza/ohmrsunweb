@@ -6,20 +6,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
 import Footer from './components/Footer';
-import CreateActivityForm from './components/Activity/CreateActivityForm';
 import StatPage from './pages/StatPage';
 import ActivityPage from './pages/ActivityPage';
 
 const App: React.FC = () => {
-
-  // const [token, setToken] = useState<string>(localStorage.getItem('token') ?? '');
-
-  // const handleTokenExpired = () => {
-  //   console.log('Session expired')
-  //   localStorage.removeItem('token');
-  //   setToken('');
-  // };
-
   return (
     <>
       <AuthProvider>
@@ -32,14 +22,6 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <HomePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/create-activity"
-              element={
-                <ProtectedRoute>
-                  <CreateActivityForm />
                 </ProtectedRoute>
               }
             />
@@ -63,7 +45,6 @@ const App: React.FC = () => {
         </Router>
         <Footer />
       </AuthProvider>
-      {/* <JWTExpiryHandler token={token} onTokenExpired={handleTokenExpired} /> */}
     </>
   );
 };

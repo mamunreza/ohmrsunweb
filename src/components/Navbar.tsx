@@ -24,9 +24,6 @@ const Navbar: React.FC = () => {
             <li className="nav-item">
               <Link className="nav-link" to="/statistic">Statistics</Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/create-activity">Create Activity</Link>
-            </li>
           </ul>
           <ul className="navbar-nav ms-auto">
             {isLoggedIn ? (
