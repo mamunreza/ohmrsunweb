@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext';
 import Footer from './components/Footer';
 import StatPage from './pages/StatPage';
 import ActivityPage from './pages/ActivityPage';
+import PlanPage from './pages/PlanPage';
 
 const App: React.FC = () => {
   return (
@@ -31,6 +32,14 @@ const App: React.FC = () => {
                 <ProtectedRoute>
                   <StatPage />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/plan"
+              element={
+                // <ProtectedRoute>
+                  <PlanPage />
+                // </ProtectedRoute>
               }
             />
             <Route
